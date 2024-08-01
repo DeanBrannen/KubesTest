@@ -1,18 +1,52 @@
 name: Get Unity license activation file 🔐
 
-on: workflow_dispatch
+on:
+  workflow_dispatch
 
 jobs:
   requestManualActivationFile:
     name: Request manual activation file 🔑
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - uses: game-ci/unity-request-activation-file@v2
-        id: getManualLicenseFile
+      - name: Install Unity Hub
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unity-hub
 
-      - uses: actions/upload-artifact@v2
+      - name: Install Unity Editor
+        run: |
+          unity-hub install --version ${{ matrix.unity.version }} --changeset ${{ matrix.unity.changeset }}
+
+      - name: Generate activation file
+        run: |
+          unity-hub install --version ${{ matrix.unity.version }} --changeset ${{ matrix.unity.changeset }}
+          unity-hub edit --version ${{ matrix.unity.version }} --changeset ${{ matrix.unity.changeset }} --createManualActivationFile
+
+      - name: Request Unity license file
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_TOTP_KEY: ${{ secrets.UNITY_TOTP_KEY }}
+        run: |
+          npm install -g unity-verify-code
+          git clone -b ci https://github.com/homuler/unity-license-activate.git
+          cd unity-license-activate
+          npm install
+          npm install -g ./unity-license-activate
+          unity-license-activate "$UNITY_EMAIL" "$UNITY_PASSWORD" Unity_v${{ matrix.unity.version }}.alf --authenticator-key "$UNITY_TOTP_KEY"
+
+      - name: Upload error screenshot
+        uses: actions/upload-artifact@v1
         with:
-          name: Manual Activation File
-          path: ${{ steps.getManualLicenseFile.outputs.filePath }}
+          name: screenshot_error
+          path: error.png
+
+      - name: Activate Unity license
+        run: |
+          ulf_file=$(ls Unity_*.ulf)
+          unity-hub edit --version ${{ matrix.unity.version }} --changeset ${{ matrix.unity.changeset }} --manualLicenseFile "$ulf_file"
+          rm "$ulf_file"
