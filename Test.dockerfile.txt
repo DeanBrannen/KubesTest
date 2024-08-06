@@ -1,0 +1,6 @@
+@echo off
+set projectpath="C:\Users\DeanB\Documents\GitHub\KubesTest\Foolin"
+set buildpath="C:\Users\DeanB\Documents\GitHub\KubesTest\TESTBUILDs"
+set logpath="C:\Users\DeanB\Documents\GitHub\KubesTest\TESTBUILDs\thing.log"
+
+"C:\Program Files\Unity\Editor\Unity.exe" -quit -batchmode -projectpath %projectpath% -buildWindowsPlayer %buildpath% -logFile %logpath%

@@ -1,0 +1,31 @@
+# Use Windows Server Core as the base image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+# Install PowerShell and other prerequisites
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'"]
+
+# Install Chocolatey, a package manager for Windows
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# Install Git, which is often required for Unity projects
+RUN choco install git --confirm
+
+# Download and install Unity Hub
+RUN Invoke-WebRequest -Uri https://public-cdn.cloud.unity3d.com/hub/prod/UnityHub.exe -OutFile C:\\UnityHub.exe; Start-Process -FilePath C:\\UnityHub.exe -ArgumentList "--install-path C:\\Program Files\\Unity Technologies\\Unity Hub", "--unattended-mode" -Wait; Remove-Item C:\\UnityHub.exe
+
+# Set the working directory
+WORKDIR C:\\KubesTest
+
+# Copy your Unity project files into the container
+# Replace 'YourUnityProject' with the name of your Unity project folder
+COPY . C:\\KubesTest\Foolin
+
+# At this point, you would typically configure Unity Hub to open your project and start the build process.
+# However, automating Unity builds within Docker, especially for Windows, is complex and often requires manual intervention.
+# You may need to adjust Unity's build settings within the Unity Editor to ensure they are compatible with the Windows environment.
+
+# Expose the default Unity port (if applicable)
+EXPOSE 80
+
+# Command to run the Unity application (this is highly dependent on your project setup)
+# CMD ["your-command-here"]

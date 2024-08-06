@@ -1,0 +1,38 @@
+# Use a base image with .NET installed since that's what Unity uses
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS sdk-env
+
+# Set working directory
+WORKDIR /app
+
+# Copy the Unity project files
+COPY . .
+
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian buster main contrib non-free" >> /etc/apt/sources.list && \
+    apt-get update
+
+# Install Unity Editor via Unity Hub
+RUN UNITYHUB_PATH="/usr/bin/unityhub" && \
+    $UNITYHUB_PATH install unity hub://Unity/Unity%20Hub/3.0.0-beta.8 linux -y && \
+    $UNITYHUB_PATH launch unity://Unity/Projects/KubesTest -y
+
+# Build the Unity project
+RUN $UNITYHUB_PATH build KubesTest -m LinuxPlayer -r Release -f Linux64 -n "BuildName"
+
+# Final image
+FROM debian:buster-slim
+
+# Install runtime dependencies
+RUN echo "Starting Runtime Dependencies Install..." && \ 
+    apt-get update && \
+    apt-get clean && \
+    echo "Runtime Dependencies successfully installed"
+
+# Copy the built Unity project from the SDK environment
+COPY --from=sdk-env /app/builds/KubesTest/Linux64/Data /app/Data
+
+# Expose the default Unity port
+EXPOSE 80
+
+# Command to run the Unity application
+CMD ["./Data/KubesTest"]

@@ -1,0 +1,22 @@
+# Start from a base Ubuntu image
+FROM ubuntu:20.04
+
+# Update the system and install necessary tools
+RUN apt-get update && apt-get install -y wget unzip xvfb x11vnc libgtk-3-dev
+
+# Install Unity Hub
+RUN wget https://public-cdn.cloud.unity.com/hub/prod/UnityHub_amd64.deb && \
+    dpkg -i UnityHub_amd64.deb && \
+    rm UnityHub_amd64.deb
+
+# Install Unity Editor
+RUN unityhub install --product 7f5bd0e8-6c9a-4b8b-ba76-8f6a3f3e3a3e # Replace with your desired Unity version ID
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the Unity project into the container
+COPY . .
+
+# Command to start Unity Hub
+CMD ["sh", "-c", "cd /app && unityhub launch"]
