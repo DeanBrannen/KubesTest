@@ -12,7 +12,7 @@ public class Builder : MonoBehaviour
 	{
 		BuildPlayerOptions bpo = new BuildPlayerOptions();
 		bpo.scenes = new[] { "Assets/Scenes/SampleScene.unity" };
-		bpo.locationPathName = "C:/Users/DeanB/Documents/GitHub/KubesTest/TESTBUILDs";
+		bpo.locationPathName = "C:/Users/DeanB/Documents/GitHub/KubesTest/TESTBUILDs/WinOS";
 		bpo.target = BuildTarget.StandaloneWindows64;
 		bpo.options = BuildOptions.None;
 
