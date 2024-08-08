@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a04e8397004c4524295db0578f552c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mSpeed: 10
+  mSpeed: 15
   turnSmoothTime: 20
   mov: {x: 0, y: 0}
   cube: {fileID: 189172893}
