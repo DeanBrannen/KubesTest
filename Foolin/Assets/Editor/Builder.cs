@@ -12,7 +12,7 @@ public class Builder : MonoBehaviour
 	{
 		BuildPlayerOptions bpo = new BuildPlayerOptions();
 		bpo.scenes = new[] { "Assets/Scenes/SampleScene.unity" };
-        bpo.locationPathName = "G:/My Drive/CloudBuilds/Foolin.exe";
+        bpo.locationPathName = "G:/My Drive/Build Pipeline Documentation/TestBuild";
 		bpo.target = BuildTarget.StandaloneWindows;
 		bpo.options = BuildOptions.None;
 
